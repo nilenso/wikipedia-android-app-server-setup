@@ -5,10 +5,16 @@
     home: "/home/{{ansible_env['SUDO_USER']}}"
     server_dir: "{{home}}/wikipedia-android-app-server"
     wikimedia_repo: "https://github.com/wikimedia"
+    restbase_port: 7644
+    parsoid_port: 8000
+    mobileapps_port: 7732
 
   tasks:
   - name: Update Apt cache
     apt: update_cache=yes
+
+  - name: Install NTP
+    apt: pkg=ntp state=installed
 
   - name: Install CURL
     apt: pkg=curl state=installed
@@ -21,7 +27,7 @@
     register: nodesourcelist
 
   - name: Add Nodesource Apt Sources List Deb
-    shell: curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+    shell: curl -sL https://deb.nodesource.com/setup_6.x | bash -
     register: nodesourceadded
     when: nodesourcelist.stat.exists == False
 
@@ -58,3 +64,9 @@
 
   - name: Install mobileapps npm deps
     npm: path={{server_dir}}/mobileapps
+
+  - name: Add restbase config
+    template: src=restbase/config.yaml dest={{server_dir}}/restbase/config.yaml
+
+  - name: Copy restbase project config
+    copy: src=restbase/project.yaml dest={{server_dir}}/restbase/project.yaml
