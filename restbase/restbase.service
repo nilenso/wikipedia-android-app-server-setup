@@ -1,0 +1,11 @@
+[Unit]
+Description=Wikipedia RESTBase
+After=network.target
+[Service]
+ExecStart={{server_dir}}/restbase/node_modules/service-runner/service-runner.js
+Restart=always
+Environment=PATH=/usr/bin:/usr/local/bin
+Environment=NODE_ENV=production
+WorkingDirectory={{server_dir}}/restbase/
+[Install]
+WantedBy=multi-user.target

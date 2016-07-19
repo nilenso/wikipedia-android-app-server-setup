@@ -1,0 +1,11 @@
+[Unit]
+Description=Wikipedia parsoid
+After=network.target
+[Service]
+ExecStart={{server_dir}}/parsoid/node_modules/service-runner/service-runner.js
+Restart=always
+Environment=PATH=/usr/bin:/usr/local/bin
+Environment=NODE_ENV=production
+WorkingDirectory={{server_dir}}/parsoid/
+[Install]
+WantedBy=multi-user.target

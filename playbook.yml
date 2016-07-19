@@ -1,6 +1,8 @@
 
 - hosts: local
-  sudo: True
+  become: true
+  become_user: root
+  become_method: sudo
   vars:
     home: "/home/{{ansible_env['SUDO_USER']}}"
     server_dir: "{{home}}/wikipedia-android-app-server"
@@ -38,9 +40,6 @@
   - name: Install build-essential
     apt: pkg=build-essential state=installed
 
-  - name: Install forever
-    npm: name=forever global=yes
-
   - name: Checkout RESTBASE git repo
     git: repo={{wikimedia_repo}}/restbase.git
          dest={{server_dir}}/restbase
@@ -55,6 +54,7 @@
     git: repo={{wikimedia_repo}}/mediawiki-services-mobileapps.git
          dest={{server_dir}}/mobileapps
          version=09543312d52941dbc7a4523bc9107d02b826acc8
+         force=yes
 
   - name: Install RESTBASE npm deps
     npm: path={{server_dir}}/restbase
@@ -76,3 +76,21 @@
 
   - name: Add mobileapps config
     template: src=mobileapps/config.yaml dest={{server_dir}}/mobileapps/config.yaml
+
+  - name: Add restbase service
+    template: src=restbase/restbase.service dest=/etc/systemd/system/restbase.service
+
+  - name: Add parsoid service
+    template: src=parsoid/parsoid.service dest=/etc/systemd/system/parsoid.service
+
+  - name: Add mobileapps service
+    template: src=mobileapps/mobileapps.service dest=/etc/systemd/system/mobileapps.service
+
+  - name: Start parsoid
+    systemd: state=restarted daemon_reload=yes name=parsoid
+
+  - name: Start mobileapps
+    systemd: state=restarted daemon_reload=yes name=mobileapps
+
+  - name: Start restbase
+    systemd: state=restarted daemon_reload=yes name=restbase
