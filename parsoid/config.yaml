@@ -1,0 +1,13 @@
+worker_heartbeat_timeout: 300000
+
+logging:
+    level: info
+
+services:
+  - module: lib/index.js
+    entrypoint: apiServiceWorker
+    conf:
+        mwApis:
+        - uri: '{{api_url}}'
+          domain: 'localhost'
+        serverPort: {{parsoid_port}}

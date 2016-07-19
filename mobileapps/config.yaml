@@ -1,0 +1,29 @@
+num_workers: 0
+
+worker_heap_limit_mb: 250
+
+logging:
+  level: trace
+
+metrics:
+
+services:
+  - name: service-mobileapp-node
+    module: ./app.js
+    conf:
+      port: {{mobileapps_port}}
+      cors: '*'
+      user_agent: WMF Mobile Content Service dev
+      mwapi_req:
+        method: post
+        uri: '{{api_url}}'
+        headers:
+          user-agent: '{% raw %}{{user-agent}}{% endraw %}'
+        body: '{% raw %}{{ default(request.query, {}) }}{% endraw %}'
+      restbase_req:
+        method: get
+        uri: 'http://localhost:{{restbase_port}}/localhost/v1/{+path}'
+        query: '{% raw %}{{ default(request.query, {}) }}{% endraw %}'
+        headers: '{% raw %}{{request.headers}}{% endraw %}'
+        body: '{% raw %}{{request.body}}{% endraw %}'
+      debug: true

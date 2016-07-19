@@ -70,3 +70,9 @@
 
   - name: Copy restbase project config
     copy: src=restbase/project.yaml dest={{server_dir}}/restbase/project.yaml
+
+  - name: Add parsoid config
+    template: src=parsoid/config.yaml dest={{server_dir}}/parsoid/config.yaml
+
+  - name: Add mobileapps config
+    template: src=mobileapps/config.yaml dest={{server_dir}}/mobileapps/config.yaml
