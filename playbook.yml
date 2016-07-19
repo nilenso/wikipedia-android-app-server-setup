@@ -1,0 +1,55 @@
+
+- hosts: local
+  sudo: True
+  vars:
+    home: "/home/{{ansible_env['SUDO_USER']}}"
+
+  tasks:
+  - name: Install CURL
+    apt: pkg=curl state=installed update_cache=true
+
+  - name: Install Apt HTTPS support
+    apt: pkg=apt-transport-https state=installed
+
+  - name: Check for nodesource Apt sources
+    stat: path=/etc/apt/sources.list.d/nodesource.list
+    register: nodesourcelist
+
+  - name: Add Nodesource Apt Sources List Deb
+    shell: curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+    register: nodesourceadded
+    when: nodesourcelist.stat.exists == False
+
+  - name: Install NodeJS
+    apt: pkg=nodejs state=latest
+    when: nodesourcelist.stat.exists or nodesourceadded|success
+
+  - name: Install build-essential
+    apt: pkg=build-essential state=installed
+
+  - name: Install forever
+    npm: name=forever global=yes
+
+  - name: Checkout RESTBASE git repo
+    git: repo=https://github.com/wikimedia/restbase.git
+         dest={{home}}/wikipedia-android-app-server/restbase
+         version=66b6440127e626e54c95b7cf3a40f0d0ccf151da
+
+  - name: Checkout parsoid git repo
+    git: repo=https://github.com/wikimedia/parsoid.git
+         dest={{home}}/wikipedia-android-app-server/parsoid
+         version=36075c7fc242ad2fd7bba05661606722ebda49aa
+
+  - name: Checkout mobileapps git repo
+    git: repo=https://github.com/wikimedia/mediawiki-services-mobileapps.git
+         dest={{home}}/wikipedia-android-app-server/mobileapps
+         version=09543312d52941dbc7a4523bc9107d02b826acc8
+
+  - name: Install RESTBASE npm deps
+    npm: path={{home}}/wikipedia-android-app-server/restbase
+
+  - name: Install parsoid npm deps
+    npm: path={{home}}/wikipedia-android-app-server/parsoid
+
+  - name: Install mobileapps npm deps
+    npm: path={{home}}/wikipedia-android-app-server/mobileapps
