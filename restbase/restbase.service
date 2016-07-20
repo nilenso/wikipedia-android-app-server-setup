@@ -1,6 +1,6 @@
 [Unit]
 Description=Wikipedia RESTBase
-After=network.target
+After=network.target mobileapps.service
 [Service]
 ExecStart={{server_dir}}/restbase/node_modules/service-runner/service-runner.js
 Restart=always

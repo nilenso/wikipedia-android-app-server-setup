@@ -86,11 +86,14 @@
   - name: Add mobileapps service
     template: src=mobileapps/mobileapps.service dest=/etc/systemd/system/mobileapps.service
 
+  - name: Reload systemd
+    shell: systemctl daemon-reload
+
   - name: Start parsoid
-    systemd: state=restarted daemon_reload=yes name=parsoid
+    shell: systemctl restart parsoid
 
   - name: Start mobileapps
-    systemd: state=restarted daemon_reload=yes name=mobileapps
+    shell: systemctl restart mobileapps
 
   - name: Start restbase
-    systemd: state=restarted daemon_reload=yes name=restbase
+    shell: systemctl restart restbase

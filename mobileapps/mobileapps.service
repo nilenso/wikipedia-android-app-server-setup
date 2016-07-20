@@ -1,6 +1,6 @@
 [Unit]
 Description=Wikipedia mobileapps
-After=network.target
+After=network.target parsoid.service
 [Service]
 ExecStart={{server_dir}}/mobileapps/node_modules/service-runner/service-runner.js
 Restart=always
